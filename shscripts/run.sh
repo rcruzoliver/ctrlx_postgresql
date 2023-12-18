@@ -9,7 +9,7 @@ done
 export LC_ALL=C   #Locale settings Override, MongoDB stuffs
 
 #MyAppPersonaldir ---> Adapt for yourself
-MY_FOLDERNAME=ctrlx-mongodb
+MY_FOLDERNAME=ctrlx-postgresql
 
 
 #whatsMyDirAgain? better not modify this
@@ -25,19 +25,19 @@ cd $MYDIR
 
 
 # ensure the conf directory exists
-if [ ! -f "./mongodb.conf" ]; then
-	cp $SNAP/bin/conf/mongodb.conf ./mongodb.conf
+if [ ! -f "./postgresql.conf" ]; then
+	cp $SNAP/bin/conf/postgresql.conf ./postgresql.conf
     echo "file conf "
 fi
 
-if [ ! -f "./mongodb.log" ]; then
-	cp $SNAP/bin/conf/mongodb.log ./mongodb.log
+if [ ! -f "./postgresql.log" ]; then
+	cp $SNAP/bin/conf/postgresql.log ./postgresql.log
     echo "file "
 fi
 
-if [ ! -d "./mongodb" ]; then
-	mkdir ./mongodb
+if [ ! -d "./postgresql" ]; then
+	mkdir ./postgresql
     echo "folder "
 fi
 
-exec $SNAP/usr/bin/mongod -f ./mongodb.conf
+exec sudo -u postgres $SNAP/usr/lib/postgresql/14/bin/postgres -D ./postgresql -c ./postgresql.conf

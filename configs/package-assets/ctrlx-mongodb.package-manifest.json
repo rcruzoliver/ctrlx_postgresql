@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.boschrexroth.com/ctrlx-automation/ctrlx-core/apps/package-manifest/package-manifest.v1.1.schema.json",
   "version": "2.2.0",
-  "id": "ctrlx-mongodb",
+  "id": "ctrlx-postgresql",
   "configuration": {
     "appDirectories": [
       {
-        "name": "ctrlx-mongodb",
-        "description": "Mongo DB",
+        "name": "ctrlx-postgresql",
+        "description": "PostgreSQL",
         "icon": "bosch-ic-core-data",
         "copyOnLoad": true
       }

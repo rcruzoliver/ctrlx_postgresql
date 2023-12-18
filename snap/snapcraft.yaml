@@ -1,22 +1,12 @@
-name: ctrlx-mongodb
+name: ctrlx-postgresql
 version: "2.2.0"
 grade: stable
-summary: MongoDB document-oriented database for ctrlX OS.
+summary: PostgreSQL object-relational database for ctrlX OS.
 description: |  
-    MongoDB is a high-performance, open source, schema-free
-    document-oriented data store that's easy to deploy, manage
-    and use. It's network accessible, written in C++ and offers 
-    the following features.
-
-       * Collection oriented storage - easy storage of object-style data
-       * Full index support, including on inner objects
-       * Query profiling
-       * Replication and fail-over support
-       * Efficient storage of binary data including large objects (e.g. videos)
-       * Auto-sharding for cloud-level scalability
-
-    High performance, scalability, and reasonable depth of functionality
-    are the goals for the project.
+    PostgreSQL is a robust and extensible open-source relational 
+    database management system. It is known for its reliability, scalability, 
+    and compliance with SQL standards. It supports a variety of data types, 
+    indexing methods, and other advanced features.
 base: core22
 confinement: strict
 # architectures:
@@ -24,7 +14,7 @@ confinement: strict
    #  build-for: [arm64]  ### <------ CHANGE IF NEEDED
 
 apps: 
-    ctrlx-mongodb:
+    ctrlx-postgresql:
         command: bin/run.sh 
         plugs: [network, network-bind, mount-observe, network-observe, system-observe, active-solution]
         daemon: simple
@@ -33,12 +23,10 @@ apps:
           restart-delay: 10s   
 
 parts:
-    mongodb:
+    postgresql:
         plugin: nil
         stage-packages:
-            - mongodb-org-server
-            - mongodb-org-mongos
-            - mongodb-mongosh
+            - postgresql
             - libssl-dev
             - libcurl4-openssl-dev
    
@@ -48,6 +36,7 @@ parts:
         organize:
           '*': bin/
 
+    # Neccesary to embed additional files
     configs:
         source: ./configs
         plugin: dump
@@ -55,6 +44,7 @@ parts:
            'package-assets/*': package-assets/${SNAPCRAFT_PROJECT_NAME}/
 
 slots:
+  # Allow the snap files to be available outside it
   package-assets:
     interface: content
     content: package-assets
@@ -63,11 +53,13 @@ slots:
         - $SNAP/package-assets/${SNAPCRAFT_PROJECT_NAME}
 
 plugs:
+  # Allow read the ctrlX OS memory with the right persmisions
   active-solution:
     interface: content
     content: solutions
     target: $SNAP_COMMON/solutions
 
 hooks:
+  # Automatically used when the snap connects the plug
   connect-plug-active-solution:
     plugs: [active-solution]
