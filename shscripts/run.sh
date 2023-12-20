@@ -1,10 +1,14 @@
 #!/bin/sh
 
+echo "running run.sh"
+
 #wait thill the solution plug is connected :)
 while ! snapctl is-connected active-solution 
 do 
   sleep 5 
 done
+
+echo "active-solution is connected"
 
 export LC_ALL=C   #Locale settings Override, MongoDB stuffs
 
@@ -16,7 +20,7 @@ MY_FOLDERNAME=ctrlx-postgresql
 MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
 
 if [ ! -d "$MYDIR" ]; then
-	mkdir $MYDIR
+	mkdir -p $MYDIR
     echo $MYDIR
 fi
 
@@ -25,19 +29,40 @@ cd $MYDIR
 
 
 # ensure the conf directory exists
-if [ ! -f "./postgresql.conf" ]; then
-	cp $SNAP/bin/conf/postgresql.conf ./postgresql.conf
-    echo "file conf "
+if [ ! -d "./configuration" ]; then
+	cp -r $SNAP/bin/data/configuration $MYDIR/configuration
+    echo "configuration folder added to persistent data "
 fi
 
 if [ ! -f "./postgresql.log" ]; then
-	cp $SNAP/bin/conf/postgresql.log ./postgresql.log
-    echo "file "
+	cp $SNAP/bin/data/postgresql.log $MYDIR/postgresql.log
+    echo "log file added to persistent data "
 fi
 
-if [ ! -d "./postgresql" ]; then
-	mkdir ./postgresql
-    echo "folder "
+if [ ! -d "./data_postgresql" ]; then
+    cp -r $SNAP/bin/data/data_postgresql $MYDIR/data_postgresql
+    echo "data folder added to persistent data "
 fi
 
-exec sudo -u postgres $SNAP/usr/lib/postgresql/14/bin/postgres -D ./postgresql -c ./postgresql.conf
+if [ ! -d "./ssl" ]; then
+    cp -r $SNAP/bin/data/ssl $MYDIR/ssl
+    echo "ssl folder added to persistent data "
+fi
+
+
+
+echo "Changing permissions"
+chmod 777 -R "$MYDIR/configuration" # must be before chown
+chmod 750 -R "$MYDIR/data_postgresql" # must be before chown
+
+echo "Changing ownership"
+chown -R snap_daemon:snap_daemon "$MYDIR"
+
+echo "Does snap_daemon actually have the right permissions?"
+ls -ld $MYDIR/configuration/postgresql.conf 
+ls -ld $MYDIR/data_postgresql
+
+echo "Let's start the server then"
+exec "${SNAP}"/usr/bin/setpriv --clear-groups --reuid snap_daemon --regid snap_daemon -- $SNAP/usr/lib/postgresql/14/bin/postgres --config-file=$MYDIR/configuration/postgresql.conf
+
+echo "<< I did not crash >>"
