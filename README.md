@@ -1,5 +1,9 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+
+sudo -u raul /usr/lib/postgresql/14/bin/postgres --config-file=/home/raul/ctrlx_postgresql/shscripts/data/configuration/postgresql.conf -D /home/raul/data_postgresql
+
+
 # ctrlx-mongodb
 
 This respository contains the source code and build instructions to generate the ctrlx-mongodb snap yourself. Shortly speaking, the ctrlx-mongodb packs mongo DB 7.0 for ubuntu 2022 with amd64 architecture. It targets ctrlX CORE virtual, ctrlX CORE X5 and ctrlX CORE x7 running ctrlX OS 2.xx (base apps running an ubuntu core 22). This application is (and will be) only supported for amd64 architecture. See the end of this README for further explainations about this issue.

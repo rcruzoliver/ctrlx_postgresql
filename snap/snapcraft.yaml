@@ -13,6 +13,23 @@ confinement: strict
    # - build-on: [amd64]
    #  build-for: [arm64]  ### <------ CHANGE IF NEEDED
 
+system-usernames:
+  snap_daemon: shared
+
+layout:
+
+  /var/run_v2/postgresql:
+    bind: $SNAP_DATA/var/run_v2/postgresql
+
+  /etc/ssl/certs:
+    bind: $SNAP/etc/ssl/certs
+  /etc/ssl/private:
+    bind: $SNAP/etc/ssl/private
+
+  /etc/postgresql/14/main:
+    bind: $SNAP/etc/postgresql/14/main
+
+
 apps: 
     ctrlx-postgresql:
         command: bin/run.sh 
@@ -27,6 +44,7 @@ parts:
         plugin: nil
         stage-packages:
             - postgresql
+            - util-linux
             - libssl-dev
             - libcurl4-openssl-dev
    

@@ -1,16 +1,22 @@
 #!/bin/sh
 
-#This script creates the basic folders, adapt for your use
+echo "running the hook"
 
-#MyAppPersonaldir ---> Adapt for yourself
 MY_FOLDERNAME=ctrlx-postgresql
+MYDIR="$SNAP_DATA/$MY_FOLDERNAME"
 
+mkdir -p $MYDIR
+chown -R root "$MYDIR"
 
-#whatsMyDirAgain? 
-MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
+mkdir /var/run_v2/postgresql/14-main.pg_stat_tmp
+ 
+cp -r $SNAP/bin/data/configuration $MYDIR/configuration
+cp -r $SNAP/bin/data/data_postgresql $MYDIR/data_postgresql
 
-# ensure the app data directory exists and in case create it :)
-if [ ! -d "$MYDIR" ]; then
-	mkdir -p "$MYDIR"
-fi
+chmod 777 -R "$MYDIR/configuration"
+chmod 750 -R "$MYDIR/data_postgresql"
 
+chown -R snap_daemon "$MYDIR"
+chown -R snap_daemon "/var/run_v2/postgresql"
+
+echo "hook finished"
