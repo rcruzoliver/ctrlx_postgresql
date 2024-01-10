@@ -1,4 +1,9 @@
 #!/bin/sh -e
 
+MY_FOLDERNAME=ctrlx-postgresql
+MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
+
+chown -R root "$MYDIR"
+
 #this script runs once at the removing. place your code below
-echo "You are removing the app"
+echo "App successfully removed"

@@ -2,20 +2,47 @@
 
 echo "running the hook"
 
+# Directory inside persistent data (SNAP_COMMON) and visible from ctrlX Web Interface
 MY_FOLDERNAME=ctrlx-postgresql
-MYDIR="$SNAP_DATA/$MY_FOLDERNAME"
+MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
 
-mkdir -p $MYDIR
+# Create the persistent data directory if it does not exists
+if [ ! -d "$MYDIR" ]; then
+	mkdir -p $MYDIR  
+fi
+
+# Ownership to root -> be able to change permissions (chmod) and copy files (cp)
 chown -R root "$MYDIR"
 
-mkdir /var/run_v2/postgresql/14-main.pg_stat_tmp
- 
-cp -r $SNAP/bin/data/configuration $MYDIR/configuration
-cp -r $SNAP/bin/data/data_postgresql $MYDIR/data_postgresql
+# Create the directory where postgreSQL expects to store log statistics 
+if [ ! -d "/var/run_v2/postgresql/14-main.pg_stat_tmp" ]; then
+    mkdir /var/run_v2/postgresql/14-main.pg_stat_tmp
+fi
 
+# If the configuration files are not in the persistent data, 
+# copy the ones that come with the snap.
+# Otherwise old files (potentially modified by user) will be left there
+if [ ! -d "$MYDIR/configuration" ]; then
+    mkdir $MYDIR/configuration
+fi
+cp -rn $SNAP/bin/data/configuration/* $MYDIR/configuration
+
+# Give the right permissions
 chmod 777 -R "$MYDIR/configuration"
-chmod 750 -R "$MYDIR/data_postgresql"
 
+# If the data files are not in the persistent data, 
+# copy the ones that come with the snap.
+# Otherwise old files (potentially modified by user) will be left there 
+if [ ! -d "$MYDIR/data_postgresql" ]; then
+    mkdir $MYDIR/data_postgresql
+fi
+cp -rn $SNAP/bin/data/data_postgresql/* $MYDIR/data_postgresql
+
+# Give the right permissions
+chmod 750 -R "$MYDIR/data_postgresql"
+   
+# Transfer ownership of the directories to snap_daemon user (but still in root group)
+# This non-root user will start the server, thus needs to own the files    
 chown -R snap_daemon "$MYDIR"
 chown -R snap_daemon "/var/run_v2/postgresql"
 

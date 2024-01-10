@@ -81,3 +81,5 @@ hooks:
   # Automatically used when the snap connects the plug
   connect-plug-active-solution:
     plugs: [active-solution]
+  remove:
+    plugs: [active-solution]
