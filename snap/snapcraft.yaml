@@ -81,5 +81,6 @@ hooks:
   # Automatically used when the snap connects the plug
   connect-plug-active-solution:
     plugs: [active-solution]
+  # Automatically when the app is desinstalled
   remove:
     plugs: [active-solution]
