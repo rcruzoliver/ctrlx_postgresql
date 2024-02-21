@@ -74,9 +74,9 @@ After running the process to create the snap, if it was sucessful, you will get 
 
 This .snap file can be directly intalled in CtrlX Core from the Apps menu. Just as a reminder, since this new app you just built has not been signed, you need to allow the installation from "unknown sources" in your device.
 
-![Alt text](/images/unknownsources.png)
+![Alt text](images/unknownsources.png)
 
-![Alt text](/images/popup.png)
+![Alt text](images/popup.png)
 
 ## Code explanation
 
@@ -227,11 +227,20 @@ One change ocurred in pg_hba.conf, where the users that have access to the serve
 
 ```conf
 local   all             postgres                                trust
+host    all             all             0.0.0.0/0               trust
 ```
 The most important and relevant change was done in the runtime directory in which the server stores some run information, such as statistics. When the server is running normally, in a non-confined environemt, the server stores this information in /var/run/. The traditional way to deal with this in a snap confined environemt is to map this directory to one that is accesible from the snap, for example $SNAP_DATA/var/run/. This can be achieved with the use of layouts in snapcraft. 
 
 Nevertheless, this cannot be the case here because layouts do not allow mapping to /var/run/ as stated in the [official documentation](https://snapcraft.io/docs/snap-layouts). The way to deal with this is telling the server that instead of storing in /var/run/, do it in another directory. In this case I chosed to name this other directory /var/run_v2/, just to avoid placing the files somewhere that eventually conflicts. I just simply substituded all the appearences of /var/run/ for /var/run_v2/ in the config files. 
 
+## Further development situation 
+As explained before, this example is profiting from the ["system-usernames" snapcraft features](https://snapcraft.io/docs/system-usernames). This feature allows to define a non-root user called snap_daemon.
 
+As done with the MongoDB example, the files that shape the data base (configuration and actual files) should be stored in a directory that persists during snap updates. The directory that does so is located under $SNAP_COMMON, moreover, a path derived from $SNAP_COMMON ("$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME") is directy visualized in ctrlX OS web interface. Sadly, the problem is that the non-root user can not own files places in that directory. For this reason, as a second option, it has been decided to store the data base under $SNAP_DATA. Such directory is backed up in snap updates, this, although not ideal, allows keeping some persistency in the data.
 
+Apart from that, sometimes when the system is shutted down, the snap_daemon user vanishes out. As a result, the files that used to be owned by it appear owner-free. This is a really undesired situation because the data base runtime can't start anymore, and moreover, the files without owner can't be restransfered to root or anything else. A workaround to this situation is installing the (same) snap file again, this will create the user snap_daemon again and the system will work. However, this is also creating a new $SNAP_DATA directory.
+
+We hope Snapcraft (Canonical) keeps developing the system-usernames functionalities, overcoming all the issues addressed here. We are looking forward to the future when this example could be developed further.
+
+Once these issues are solved, we could even store the data base (data_postgresql folder) in a external storage media as described for the Mongo DB example. 
 

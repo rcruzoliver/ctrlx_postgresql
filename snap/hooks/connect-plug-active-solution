@@ -4,7 +4,8 @@ echo "running the hook"
 
 # Directory inside persistent data (SNAP_COMMON) and visible from ctrlX Web Interface
 MY_FOLDERNAME=ctrlx-postgresql
-MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
+MYDIR="$SNAP_DATA/solutions/activeConfiguration/$MY_FOLDERNAME"
+
 
 # Create the persistent data directory if it does not exists
 if [ ! -d "$MYDIR" ]; then
@@ -12,7 +13,7 @@ if [ ! -d "$MYDIR" ]; then
 fi
 
 # Ownership to root -> be able to change permissions (chmod) and copy files (cp)
-chown -R root "$MYDIR"
+chown -R root:root "$MYDIR"
 
 # Create the directory where postgreSQL expects to store log statistics 
 if [ ! -d "/var/run_v2/postgresql/14-main.pg_stat_tmp" ]; then
@@ -43,7 +44,7 @@ chmod 750 -R "$MYDIR/data_postgresql"
    
 # Transfer ownership of the directories to snap_daemon user (but still in root group)
 # This non-root user will start the server, thus needs to own the files    
-chown -R snap_daemon "$MYDIR"
-chown -R snap_daemon "/var/run_v2/postgresql"
+chown -R snap_daemon:root "$MYDIR"
+chown -R snap_daemon:root "/var/run_v2/postgresql"
 
 echo "hook finished"

@@ -16,7 +16,7 @@ export LC_ALL=C   #Locale settings Override, from MongoDB example
 
 # Directory inside persistent data (SNAP_COMMON) and visible from ctrlX Web Interface
 MY_FOLDERNAME=ctrlx-postgresql
-MYDIR="$SNAP_COMMON/solutions/activeConfiguration/$MY_FOLDERNAME"
+MYDIR="$SNAP_DATA/solutions/activeConfiguration/$MY_FOLDERNAME"
 
 
 ## SERVER ##
@@ -38,5 +38,10 @@ exec "${SNAP}"/usr/bin/setpriv --clear-groups --reuid snap_daemon --regid snap_d
 echo "<< PostgreSQL has crashed. >>"
 echo "<< Server will be automatically restarted ... >>"
 
+chown -R root:root "$MYDIR"
+chown -R root:root "/var/run_v2/postgresql"
+
 ############
 ## SERVER ##
+
+
